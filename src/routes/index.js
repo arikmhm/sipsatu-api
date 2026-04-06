@@ -6,6 +6,7 @@ const priceRoutes = require('./price.routes');
 const userRoutes = require('./user.routes');
 const uploadRoutes = require('./upload.routes');
 const depositRoutes = require('./deposit.routes');
+const nasabahRoutes = require('./nasabah.routes');
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/waste-prices', priceRoutes);
 router.use('/users', userRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/deposits', depositRoutes);
+router.use('/nasabah', nasabahRoutes);
 
 module.exports = router;
