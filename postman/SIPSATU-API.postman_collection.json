@@ -1,0 +1,367 @@
+{
+  "info": {
+    "name": "SIPSATU API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api" },
+    { "key": "admin_token", "value": "" },
+    { "key": "petugas_token", "value": "" },
+    { "key": "nasabah_token", "value": "" },
+    { "key": "waste_bank_id", "value": "" },
+    { "key": "category_id", "value": "" },
+    { "key": "nasabah_id", "value": "" },
+    { "key": "deposit_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Nasabah",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Nasabah\",\n  \"phone\": \"089900000001\",\n  \"email\": \"test@email.com\",\n  \"password\": \"password123\",\n  \"waste_bank_id\": \"{{waste_bank_id}}\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data && res.data.token) { pm.collectionVariables.set('nasabah_token', res.data.token); }"] }
+          }]
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"08110000001\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data && res.data.token) { pm.collectionVariables.set('admin_token', res.data.token); }"] }
+          }]
+        },
+        {
+          "name": "Login Petugas",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"08110000002\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data) { pm.collectionVariables.set('petugas_token', res.data.token); pm.collectionVariables.set('waste_bank_id', res.data.waste_bank_id); }"] }
+          }]
+        },
+        {
+          "name": "Login Nasabah",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"08220000001\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data) { pm.collectionVariables.set('nasabah_token', res.data.token); pm.collectionVariables.set('nasabah_id', res.data.id); }"] }
+          }]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Login - Wrong Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"login\": \"08110000001\",\n  \"password\": \"wrongpass\"\n}" }
+          }
+        },
+        {
+          "name": "Profile - No Token (401)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Waste Banks",
+      "item": [
+        {
+          "name": "List Waste Banks (public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/waste-banks", "host": ["{{base_url}}"], "path": ["waste-banks"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data && res.data.length) { pm.collectionVariables.set('waste_bank_id', res.data[0].id); }"] }
+          }]
+        },
+        {
+          "name": "Detail Waste Bank (public)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/waste-banks/{{waste_bank_id}}", "host": ["{{base_url}}"], "path": ["waste-banks", "{{waste_bank_id}}"] }
+          }
+        },
+        {
+          "name": "Create Waste Bank (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-banks", "host": ["{{base_url}}"], "path": ["waste-banks"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Bank Sampah Dahlia\",\n  \"address\": \"Jl. Dahlia No. 3\",\n  \"kelurahan\": \"Sukamaju\",\n  \"phone\": \"081234567899\",\n  \"operating_hours\": \"Senin-Jumat 09:00-13:00\"\n}" }
+          }
+        },
+        {
+          "name": "Update Waste Bank (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-banks/{{waste_bank_id}}", "host": ["{{base_url}}"], "path": ["waste-banks", "{{waste_bank_id}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated description\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Waste Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-categories", "host": ["{{base_url}}"], "path": ["waste-categories"] }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data && res.data.length) { pm.collectionVariables.set('category_id', res.data[0].id); }"] }
+          }]
+        },
+        {
+          "name": "Create Category (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-categories", "host": ["{{base_url}}"], "path": ["waste-categories"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Elektronik\",\n  \"unit\": \"kg\"\n}" }
+          }
+        },
+        {
+          "name": "Update Category (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["waste-categories", "{{category_id}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Plastik HD\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Waste Prices",
+      "item": [
+        {
+          "name": "Get Latest Prices",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-prices?waste_bank_id={{waste_bank_id}}", "host": ["{{base_url}}"], "path": ["waste-prices"], "query": [{ "key": "waste_bank_id", "value": "{{waste_bank_id}}" }] }
+          }
+        },
+        {
+          "name": "Set New Price (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/waste-prices", "host": ["{{base_url}}"], "path": ["waste-prices"] },
+            "body": { "mode": "raw", "raw": "{\n  \"waste_bank_id\": \"{{waste_bank_id}}\",\n  \"category_id\": \"{{category_id}}\",\n  \"price_per_unit\": 3500,\n  \"effective_date\": \"2026-04-15\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/users?page=1&limit=20", "host": ["{{base_url}}"], "path": ["users"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] }
+          }
+        },
+        {
+          "name": "List Users - Filter by Role",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/users?role=nasabah", "host": ["{{base_url}}"], "path": ["users"], "query": [{ "key": "role", "value": "nasabah" }] }
+          }
+        },
+        {
+          "name": "Detail User (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/users/{{nasabah_id}}", "host": ["{{base_url}}"], "path": ["users", "{{nasabah_id}}"] }
+          }
+        },
+        {
+          "name": "Create Petugas (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/users", "host": ["{{base_url}}"], "path": ["users"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Petugas Baru\",\n  \"phone\": \"089900000099\",\n  \"email\": \"petugasbaru@email.com\",\n  \"password\": \"password123\",\n  \"role\": \"petugas\",\n  \"waste_bank_id\": \"{{waste_bank_id}}\"\n}" }
+          }
+        },
+        {
+          "name": "Search Nasabah (petugas)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{petugas_token}}" }],
+            "url": { "raw": "{{base_url}}/users/nasabah/search?q=Budi", "host": ["{{base_url}}"], "path": ["users", "nasabah", "search"], "query": [{ "key": "q", "value": "Budi" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deposits",
+      "item": [
+        {
+          "name": "Create Deposit (petugas)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{petugas_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits", "host": ["{{base_url}}"], "path": ["deposits"] },
+            "body": { "mode": "raw", "raw": "{\n  \"user_id\": \"{{nasabah_id}}\",\n  \"payment_status\": \"unpaid\",\n  \"items\": [\n    { \"category_id\": \"{{category_id}}\", \"weight\": 2.5 }\n  ]\n}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const res = pm.response.json();", "if (res.data) { pm.collectionVariables.set('deposit_id', res.data.id); }"] }
+          }]
+        },
+        {
+          "name": "List Deposits (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits?page=1&limit=20", "host": ["{{base_url}}"], "path": ["deposits"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] }
+          }
+        },
+        {
+          "name": "List Deposits - Filter Unpaid",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits?payment_status=unpaid", "host": ["{{base_url}}"], "path": ["deposits"], "query": [{ "key": "payment_status", "value": "unpaid" }] }
+          }
+        },
+        {
+          "name": "List Deposits (nasabah - own)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{nasabah_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits", "host": ["{{base_url}}"], "path": ["deposits"] }
+          }
+        },
+        {
+          "name": "Detail Deposit",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits/{{deposit_id}}", "host": ["{{base_url}}"], "path": ["deposits", "{{deposit_id}}"] }
+          }
+        },
+        {
+          "name": "Today's Deposits (petugas)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{petugas_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits/today", "host": ["{{base_url}}"], "path": ["deposits", "today"] }
+          }
+        },
+        {
+          "name": "Pay Deposit (petugas)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{petugas_token}}" }],
+            "url": { "raw": "{{base_url}}/deposits/{{deposit_id}}/pay", "host": ["{{base_url}}"], "path": ["deposits", "{{deposit_id}}", "pay"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "payment_proof", "type": "file", "src": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nasabah",
+      "item": [
+        {
+          "name": "Dashboard Nasabah",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{nasabah_token}}" }],
+            "url": { "raw": "{{base_url}}/nasabah/dashboard", "host": ["{{base_url}}"], "path": ["nasabah", "dashboard"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload File (petugas)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{petugas_token}}" }],
+            "url": { "raw": "{{base_url}}/upload", "host": ["{{base_url}}"], "path": ["upload"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            }
+          }
+        },
+        {
+          "name": "Upload - Forbidden (nasabah)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{nasabah_token}}" }],
+            "url": { "raw": "{{base_url}}/upload", "host": ["{{base_url}}"], "path": ["upload"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": "" }]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
