@@ -10,7 +10,8 @@ app.get('/', (req, res) => {
   res.json({ success: true, message: 'SIPSATU API' });
 });
 
-// TODO: register routes di /api
+const routes = require('./routes');
+app.use('/api', routes);
 
 const errorHandler = require('./middlewares/errorHandler');
 app.use(errorHandler);
