@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const supabase = require('../config/supabase');
 const env = require('../config/env');
 const AppError = require('../utils/AppError');
@@ -9,7 +9,7 @@ exports.upload = async (file) => {
   }
 
   const ext = file.mimetype === 'image/png' ? 'png' : 'jpg';
-  const filename = `${uuidv4()}-${Date.now()}.${ext}`;
+  const filename = `${crypto.randomUUID()}-${Date.now()}.${ext}`;
 
   const { error } = await supabase.storage
     .from(env.SUPABASE_BUCKET)
