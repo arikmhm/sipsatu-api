@@ -1,4 +1,7 @@
-require('dotenv').config();
+// Load .env only in development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const env = {
   PORT: process.env.PORT || 3000,
