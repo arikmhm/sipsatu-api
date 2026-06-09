@@ -1,13 +1,5 @@
 require('dotenv').config();
 
-
-console.log('ENV DEBUG:', {
-  DATABASE_URL: process.env.DATABASE_URL ? '✓ ada' : '✗ kosong',
-  SUPABASE_URL: process.env.SUPABASE_URL ? '✓ ada' : '✗ kosong',
-  SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY ? '✓ ada' : '✗ kosong',
-  JWT_SECRET: process.env.JWT_SECRET ? '✓ ada' : '✗ kosong',
-});
-
 const env = {
   PORT: process.env.PORT || 3000,
   NODE_ENV: process.env.NODE_ENV || 'development',
