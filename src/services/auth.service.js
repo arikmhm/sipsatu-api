@@ -53,6 +53,9 @@ exports.register = async (data) => {
 };
 
 exports.login = async (data) => {
+  console.log('[login] received body keys:', Object.keys(data));
+  console.log('[login] login field value:', data.login);
+
   const [user] = await db
     .select()
     .from(users)
